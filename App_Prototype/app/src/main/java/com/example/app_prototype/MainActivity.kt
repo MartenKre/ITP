@@ -26,6 +26,7 @@ import java.lang.Exception
 import java.lang.reflect.Executable
 import android.app.Activity
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.Intent
 import android.widget.TextView
 import android.widget.Toast
 import kotlin.math.*
@@ -44,6 +45,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var ziel_textview: EditText
     lateinit var preis_textview: TextView
     lateinit var zeit_textview: TextView
+    lateinit var intent_page2: Intent
+    companion object {
+        var preis = ""
+        var fahrzeit = ""
+        var start = ""
+        var ziel = ""
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +65,9 @@ class MainActivity : AppCompatActivity() {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(iniliatization_location, 9f))
 
         })
-        var dialog = Dialog_Window_1()      //initialize dialog window
+        var dialog = Dialog_Window_1(this)      //initialize dialog window
+        intent_page2 = Intent(this, MainActivity2::class.java)  //Initialize Intent
+        //startActivity(intent_page2)
 
         //Initialize Bottons
         current_location_btn = findViewById<Button>(R.id.current_location_button)
@@ -72,6 +82,7 @@ class MainActivity : AppCompatActivity() {
             val current_location = LatLng(47.66786, 9.17242)
             start_marker = MarkerOptions().position(current_location).title("Start")
             draw_marker_on_map(false, start_marker)
+            start = "Aktuelle Position"
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15f))
             calculate_preis_and_zeit()
         }
@@ -117,6 +128,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun open_Activity2(){
+        Log.d("AL", "test1")
+        startActivity(intent_page2)
+    }
+
     fun draw_marker_on_map(marker_type: Boolean, marker: MarkerOptions){   //marker type -> start/ziel
         googleMap.clear()
         if (marker_type == false){
@@ -145,6 +161,10 @@ class MainActivity : AppCompatActivity() {
             var fahrzeit_h = (round(distance * fahrzeit_koeff) / 60).toInt().toString().padStart(2, '0')
             preis_textview.text = "Preis: $price_rounded €"
             zeit_textview.text = "Fahrzeit: $fahrzeit_h h $fahrzeit_min"
+
+            //set global variables
+            preis = "$price_rounded €"
+            fahrzeit = "$fahrzeit_h h $fahrzeit_min"
         }
         else{
             return
@@ -245,10 +265,12 @@ class MainActivity : AppCompatActivity() {
             if (id_edittext == "Ziel") {
                 ziel_marker = MarkerOptions().position(latLng).title(id_edittext)
                 draw_marker_on_map(true, ziel_marker)
+                ziel = location
             }
             else{
                 start_marker = MarkerOptions().position(latLng).title(id_edittext)
                 draw_marker_on_map(false, start_marker)
+                start = location
             }
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         }
