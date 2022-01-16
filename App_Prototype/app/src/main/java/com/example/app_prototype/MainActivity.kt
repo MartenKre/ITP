@@ -47,10 +47,10 @@ class MainActivity : AppCompatActivity() {
     lateinit var zeit_textview: TextView
     lateinit var intent_page2: Intent
     companion object {
-        var preis = ""
-        var fahrzeit = ""
-        var start = ""
-        var ziel = ""
+        var preis = "-"
+        var fahrzeit = "-"
+        var start = "-"
+        var ziel = "-"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,11 +65,12 @@ class MainActivity : AppCompatActivity() {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(iniliatization_location, 9f))
 
         })
+
         var dialog = Dialog_Window_1(this)      //initialize dialog window
         intent_page2 = Intent(this, MainActivity2::class.java)  //Initialize Intent
-        //startActivity(intent_page2)
+        //startActivity(intent_page2)       // uncomment to jump directly to page2
 
-        //Initialize Bottons
+        //Initialize Buttons
         current_location_btn = findViewById<Button>(R.id.current_location_button)
         call_shuttle_btn = findViewById<Button>(R.id.call_shuttle_button)
         start_textview = findViewById<EditText>(R.id.start)
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity() {
 
         current_location_btn.setOnClickListener{
             start_textview.setText("Aktuelle Position")
-            val current_location = LatLng(47.66786, 9.17242)
+            val current_location = LatLng(47.66876, 9.16962)
             start_marker = MarkerOptions().position(current_location).title("Start")
             draw_marker_on_map(false, start_marker)
             start = "Aktuelle Position"
