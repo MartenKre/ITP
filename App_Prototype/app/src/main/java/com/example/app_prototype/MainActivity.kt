@@ -130,7 +130,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun open_Activity2(){
-        Log.d("AL", "test1")
         startActivity(intent_page2)
     }
 
