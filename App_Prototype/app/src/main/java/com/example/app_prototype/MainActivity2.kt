@@ -26,6 +26,7 @@ class MainActivity2 : AppCompatActivity() {
     lateinit var preis_textview: TextView
     lateinit var fahrzeit_textview: TextView
     lateinit var textView_shuttleinfo: TextView
+    lateinit var textView_main_caption: TextView
     lateinit var preis: String
     lateinit var fahrzeit: String
     lateinit var start: String
@@ -34,6 +35,8 @@ class MainActivity2 : AppCompatActivity() {
     lateinit var googleMap2: GoogleMap
     lateinit var last_timer: CountDownTimer
     var shuttle_marker: Marker? = null
+    var start_marker: Marker? = null
+    var ziel_marker: Marker? = null
     var map_ready: Boolean = false
     var marker_icon: BitmapDescriptor? = null
     var active_timer = false
@@ -54,6 +57,8 @@ class MainActivity2 : AppCompatActivity() {
             googleMap2.animateCamera(CameraUpdateFactory.newLatLngZoom(iniliatization_location, 9f))
             marker_icon = bitmapDescriptorFromVector(this, R.drawable.ic_shuttle_white)
             shuttle_marker = googleMap2.addMarker(MarkerOptions().position(iniliatization_location).title("Shuttle").icon(marker_icon))
+            start_marker = googleMap2.addMarker(MarkerOptions().position(MainActivity.start_coord).title("Start"))
+            ziel_marker = googleMap2.addMarker(MarkerOptions().position(MainActivity.ziel_coord).title("Ziel"))
 
             googleMap2.setOnCameraMoveListener {
                 val timer = object: CountDownTimer(5000, 5000) {
@@ -64,7 +69,7 @@ class MainActivity2 : AppCompatActivity() {
                         if (last_timer == this){
                             var location = shuttle_marker!!.position
                             camera_moved_by_program = true
-                            googleMap2.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 16f))
+                            googleMap2.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
                             active_timer = false
                         }
                     }
@@ -86,6 +91,7 @@ class MainActivity2 : AppCompatActivity() {
         preis_textview = findViewById<TextView>(R.id.preis_textview2)
         fahrzeit_textview = findViewById<TextView>(R.id.fahrzeit_textview2)
         textView_shuttleinfo = findViewById<TextView>(R.id.textView_shuttleinfo)
+        textView_main_caption = findViewById<TextView>(R.id.textView2)
 
         preis = MainActivity.preis
         start = MainActivity.start
@@ -97,9 +103,10 @@ class MainActivity2 : AppCompatActivity() {
         preis_textview.text = "Preis: $preis"
         fahrzeit_textview.text = "Fahrzeit: $fahrzeit"
 
-        val csv_file = InputStreamReader(assets.open("csvfile.csv"))
+        val csv_file = InputStreamReader(assets.open("gps_data_02.csv"))
         val reader = BufferedReader(csv_file)
         var line : String?
+        var recording_time : Long = 0
 
         while (reader.readLine().also { line = it } != null){
             val row : List<String> = line!!.split(";")
@@ -107,20 +114,39 @@ class MainActivity2 : AppCompatActivity() {
                 continue
             Data_Longitude.add(row[22])
             Data_Latitude.add(row[21])
+            if(row[29] != "Time since start in ms ")
+                recording_time = row[29].toLong()
         }
 
+        Log.d("La", Data_Latitude[Data_Latitude.lastIndex])
+        Log.d("Lo", Data_Longitude[Data_Longitude.lastIndex])
+
         var index = 1
-        val timer = object: CountDownTimer(20000, 30) {
+        val timer = object: CountDownTimer(recording_time/2, 500) {
             override fun onTick(millisUntilFinished: Long) {
-                var remaining_time = (millisUntilFinished / 1000).toString()
-                textView_shuttleinfo.text = "Das Shuttle ist in $remaining_time Minuten bei Ihnen"
+                var remaining_time = (millisUntilFinished / 60000).toString()
+                if (remaining_time > "1")
+                    textView_shuttleinfo.text = "Das Shuttle ist in $remaining_time Minuten bei Ihnen"
+                else if (remaining_time == "1")
+                    textView_shuttleinfo.text = "Das Shuttle ist in $remaining_time Minute bei Ihnen"
+                else
+                    textView_shuttleinfo.text = "Das Shuttle ist weniger als 1 Minute bei Ihnen"
+
                 if (index <= Data_Latitude.lastIndex)
+                {
+                    Log.d("Index", index.toString())
                     draw_marker_on_map(index)
-                index += 1
+                }
+                else{
+                    Log.d("Index", index.toString())
+                    Log.d("Index", Data_Latitude.lastIndex.toString())
+                }
+                index += 2
             }
 
             override fun onFinish() {
                 textView_shuttleinfo.text = "Das Shuttle befindet sich nun an der Startposition"
+                textView_main_caption.text = "Das Shuttle ist da!"
             }
         }
         timer.start()
@@ -159,15 +185,13 @@ class MainActivity2 : AppCompatActivity() {
             val prev_location = shuttle_marker?.position
             //shuttle_marker!!.remove()
             shuttle_marker?.position = current_location
+            Log.d("DRAW", current_location.toString())
             //shuttle_marker = googleMap2.addMarker(MarkerOptions().position(current_location).title("Shuttle").icon(marker_icon))
             if(active_timer == false)
             {
                 if (current_location.latitude != prev_location!!.latitude) {
-                    Log.d("DM", "moved")
-                    Log.d("DM", current_location.latitude.toString())
-                    Log.d("DM", prev_location!!.latitude.toString())
                     camera_moved_by_program = true
-                    googleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 16f))
+                    googleMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15f))
                 }
             }
         }

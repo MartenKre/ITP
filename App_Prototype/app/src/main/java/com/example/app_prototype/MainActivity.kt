@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var zeit_textview: TextView
     lateinit var intent_page2: Intent
     companion object {
+        lateinit var start_coord: LatLng
+        lateinit var ziel_coord: LatLng
         var preis = "-"
         var fahrzeit = "-"
         var start = "-"
@@ -130,6 +132,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun open_Activity2(){
+        start_coord = start_marker.position
+        ziel_coord = ziel_marker.position
         startActivity(intent_page2)
     }
 
