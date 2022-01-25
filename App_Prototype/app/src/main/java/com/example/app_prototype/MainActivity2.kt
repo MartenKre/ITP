@@ -1,12 +1,14 @@
 package com.example.app_prototype
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -34,6 +36,7 @@ class MainActivity2 : AppCompatActivity() {
     lateinit var mapFragment : SupportMapFragment
     lateinit var googleMap2: GoogleMap
     lateinit var last_timer: CountDownTimer
+    lateinit var intent_page3: Intent
     var shuttle_marker: Marker? = null
     var start_marker: Marker? = null
     var ziel_marker: Marker? = null
@@ -85,6 +88,8 @@ class MainActivity2 : AppCompatActivity() {
             }
         })
 
+        intent_page3 = Intent(this, MainActivity3::class.java)  //Initialize Intent
+        startActivity(intent_page3)  //uncomment to go to page 3 directly
 
         start_textview = findViewById<TextView>(R.id.start_textview)
         ziel_textview = findViewById<TextView>(R.id.ziel_texttview)
@@ -147,9 +152,30 @@ class MainActivity2 : AppCompatActivity() {
             override fun onFinish() {
                 textView_shuttleinfo.text = "Das Shuttle befindet sich nun an der Startposition"
                 textView_main_caption.text = "Das Shuttle ist da!"
+                display_toast()
+                open_Activity3()
             }
         }
         timer.start()
+    }
+
+    fun open_Activity3(){
+        // wait 5 Sec then start Activity3
+        val timer = object: CountDownTimer(5000, 5000) {
+            override fun onTick(millisUntilFinished: Long) {
+            }
+
+            override fun onFinish() {
+                startActivity(intent_page3)
+            }
+        }
+        timer.start()
+    }
+
+    fun display_toast()
+    {
+        val toast = Toast.makeText(this, "Das Shuttle ist an der Startposition", Toast.LENGTH_SHORT)
+        toast.show()
     }
 
 

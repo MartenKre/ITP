@@ -269,12 +269,14 @@ class MainActivity : AppCompatActivity() {
             if (id_edittext == "Ziel") {
                 ziel_marker = MarkerOptions().position(latLng).title(id_edittext)
                 draw_marker_on_map(true, ziel_marker)
-                ziel = location
+                ziel = address.featureName.toString()
+                ziel_textview.setText(address.featureName.toString(), TextView.BufferType.EDITABLE)
             }
             else{
                 start_marker = MarkerOptions().position(latLng).title(id_edittext)
                 draw_marker_on_map(false, start_marker)
-                start = location
+                start = address.featureName.toString()
+                start_textview.setText(address.featureName.toString(), TextView.BufferType.EDITABLE)
             }
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         }
