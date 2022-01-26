@@ -8,8 +8,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
-import android.widget.EditText
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -27,8 +25,10 @@ import java.lang.reflect.Executable
 import android.app.Activity
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
-import android.widget.TextView
-import android.widget.Toast
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.*
+import androidx.core.widget.addTextChangedListener
 import kotlin.math.*
 
 
@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var ziel_textview: EditText
     lateinit var preis_textview: TextView
     lateinit var zeit_textview: TextView
+    lateinit var start_suggestion: AutoCompleteTextView
     lateinit var intent_page2: Intent
     companion object {
         lateinit var start_coord: LatLng
@@ -79,6 +80,51 @@ class MainActivity : AppCompatActivity() {
         ziel_textview = findViewById<EditText>(R.id.ziel)
         preis_textview = findViewById<TextView>(R.id.preis_textView)
         zeit_textview = findViewById<TextView>(R.id.fahrzeit_textview)
+        //start_suggestion = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
+
+        /*
+        start_suggestion.addTextChangedListener(object : TextWatcher
+        {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+                // activates every time a key is pressed
+                var addresses = find_addresses("Start")
+                if (addresses.size == 2)
+                {
+                    Log.d("S1", "${addresses[1]}")
+                    var suggestions = arrayOf("${addresses[1]}")
+                    var adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, suggestions)
+                    start_suggestion.setAdapter(adapter)
+                    start_suggestion.showDropDown()
+                }
+                else if (addresses.size == 3)
+                {
+                    Log.d("S2", "${addresses[1]}, ${addresses[2]}")
+                    var suggestions = arrayOf("${addresses[1]}", "${addresses[2]}")
+                    var adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, suggestions)
+                    start_suggestion.setAdapter(adapter)
+                    start_suggestion.showDropDown()
+                }
+                else if (addresses.size == 4)
+                {
+                    Log.d("S3", "${addresses[1]}, ${addresses[2]}, ${addresses[3]}")
+                    var suggestions = arrayOf("${addresses[1]}", "${addresses[2]}", "${addresses[3]}")
+                    var adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, suggestions)
+                    start_suggestion.setAdapter(adapter)
+                    start_suggestion.showDropDown()
+                }
+                else
+                    Log.d("SS", "no addresses found: ${addresses.size}")
+            }
+
+        })*/
+
+        //start_suggestion.setOnFocusChangeListener { view, b ->  if (b) start_suggestion.showDropDown()}
 
         current_location_btn.setOnClickListener{
             start_textview.setText("Aktuelle Position")
@@ -238,7 +284,7 @@ class MainActivity : AppCompatActivity() {
         if (id_edittext == "Ziel") {
             textview = findViewById<EditText>(R.id.ziel)
         }
-        else{
+        else {
             textview = findViewById<EditText>(R.id.start)
         }
         lateinit var location: String
@@ -281,6 +327,52 @@ class MainActivity : AppCompatActivity() {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         }
     }
+
+    /*
+    fun find_addresses(id_edittext: String) : MutableList<String> {
+        val result = mutableListOf("")
+        lateinit var textview: EditText
+        if (id_edittext == "Ziel") {
+            //todo: hier ziel edittext einbauen
+            textview = findViewById<EditText>(R.id.ziel)
+        }
+        else {
+            textview = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
+        }
+        lateinit var location: String
+        location = textview.text.toString()
+        var addressList: List<Address>? = null
+
+        if (location == null || location == "") {
+            return result
+        }
+        else{
+            val geoCoder = Geocoder(this)
+            try {
+                addressList = geoCoder.getFromLocationName(location, 1)
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            if (addressList != null) {
+                // check if no address was found
+                if (addressList.size == 0) {
+                    return result
+                }
+            }
+            val address1 = addressList!![0]
+            result.add(address1.featureName)
+            if (addressList.size >= 2){
+                val address2 = addressList!![1]
+                result.add(address2.featureName)
+            }
+            if (addressList.size >= 3){
+                val address3 = addressList!![2]
+                result.add(address3.featureName)
+            }
+            return result
+        }
+    }*/
 }
 
 

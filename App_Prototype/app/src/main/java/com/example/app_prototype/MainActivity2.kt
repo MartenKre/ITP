@@ -89,7 +89,7 @@ class MainActivity2 : AppCompatActivity() {
         })
 
         intent_page3 = Intent(this, MainActivity3::class.java)  //Initialize Intent
-        startActivity(intent_page3)  //uncomment to go to page 3 directly
+        //startActivity(intent_page3)  //uncomment to go to page 3 directly
 
         start_textview = findViewById<TextView>(R.id.start_textview)
         ziel_textview = findViewById<TextView>(R.id.ziel_texttview)
