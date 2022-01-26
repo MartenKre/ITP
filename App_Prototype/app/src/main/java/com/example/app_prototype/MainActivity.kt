@@ -315,14 +315,50 @@ class MainActivity : AppCompatActivity() {
             if (id_edittext == "Ziel") {
                 ziel_marker = MarkerOptions().position(latLng).title(id_edittext)
                 draw_marker_on_map(true, ziel_marker)
-                ziel = address.featureName.toString()
-                ziel_textview.setText(address.featureName.toString(), TextView.BufferType.EDITABLE)
+                var str1 = " "
+                var str2 = " "
+                var str3 = " "
+                if (address.locality == null){
+                    address.locality = ""
+                }
+                if (address.subLocality == null) {
+                    address.subLocality = ""
+                    str1 = ""
+                }
+                if (address.thoroughfare == null) {
+                    address.thoroughfare = ""
+                    str2 = ""
+                }
+                if (address.subThoroughfare == null) {
+                    address.subThoroughfare = ""
+                    str3 = ""
+                }
+                ziel = address.locality.toString() + str1 + address.subLocality.toString() + str2 + address.thoroughfare.toString() + str3 + address.subThoroughfare.toString()
+                ziel_textview.setText(ziel, TextView.BufferType.EDITABLE)
             }
             else{
                 start_marker = MarkerOptions().position(latLng).title(id_edittext)
                 draw_marker_on_map(false, start_marker)
-                start = address.featureName.toString()
-                start_textview.setText(address.featureName.toString(), TextView.BufferType.EDITABLE)
+                var str1 = " "
+                var str2 = " "
+                var str3 = " "
+                if (address.locality == null){
+                    address.locality = ""
+                }
+                if (address.subLocality == null) {
+                    address.subLocality = ""
+                    str1 = ""
+                }
+                if (address.thoroughfare == null) {
+                    address.thoroughfare = ""
+                    str2 = ""
+                }
+                if (address.subThoroughfare == null) {
+                    address.subThoroughfare = ""
+                    str3 = ""
+                }
+                start = address.locality.toString() + str1 + address.subLocality.toString() + str2 + address.thoroughfare.toString() + str3 + address.subThoroughfare.toString()
+                start_textview.setText(start, TextView.BufferType.EDITABLE)
             }
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         }

@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import android.view.View.OnTouchListener
 import android.widget.Button
+import android.widget.Toast
 
 import com.growingio.android.sdk.track.providers.ConfigurationProvider.core
 
@@ -27,6 +28,7 @@ class MainActivity3 : AppCompatActivity() {
     lateinit var textView_ziel_location: TextView
     lateinit var textView_start_time: TextView
     lateinit var textView_ziel_time: TextView
+    lateinit var textView_header: TextView
     lateinit var button_change_stop: Button
     var fahrzeit: Int = 0 // fahrzeit in minutes
 
@@ -62,6 +64,7 @@ class MainActivity3 : AppCompatActivity() {
         shuttle_slider.setMax(0)
         shuttle_slider.setMax(fahrzeit*60*1000)
         shuttle_slider.setOnTouchListener(OnTouchListener { v, event -> true })     // Disable Seekbar Touchevent (without disabling seekbar)
+        textView_header = findViewById<TextView>(R.id.textView4)
         textView_remaining_time = findViewById<TextView>(R.id.textView5)
         textView_start_location = findViewById<TextView>(R.id.textView8)
         textView_ziel_location = findViewById<TextView>(R.id.textView9)
@@ -95,7 +98,12 @@ class MainActivity3 : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                shuttle_slider.progress = (fahrzeit * 60 *1000).toInt()
+                shuttle_slider.progress = (fahrzeit * 60 *1000)
+                button_change_stop.isEnabled = false
+                textView_remaining_time.text = "Bitte steigen Sie hier aus"
+                textView_header.text = "Das Shuttle hat das Ziel erreicht"
+                val toast = Toast.makeText(this@MainActivity3, "Das Shuttle hat das Ziel erreicht", Toast.LENGTH_SHORT)
+                toast.show()
             }
         }
         timer.start()

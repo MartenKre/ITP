@@ -123,9 +123,6 @@ class MainActivity2 : AppCompatActivity() {
                 recording_time = row[29].toLong()
         }
 
-        Log.d("La", Data_Latitude[Data_Latitude.lastIndex])
-        Log.d("Lo", Data_Longitude[Data_Longitude.lastIndex])
-
         var index = 1
         val timer = object: CountDownTimer(recording_time/2, 500) {
             override fun onTick(millisUntilFinished: Long) {
