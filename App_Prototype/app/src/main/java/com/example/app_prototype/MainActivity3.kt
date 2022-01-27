@@ -1,23 +1,21 @@
 package com.example.app_prototype
 
+import android.content.pm.ActivityInfo
+import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.ContactsContract
 import android.view.MotionEvent
-import android.widget.SeekBar
-import android.widget.TextView
 import kotlin.math.round
 import android.view.View
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import android.view.View.OnTouchListener
-import android.widget.Button
-import android.widget.Toast
+import android.widget.*
 
-import com.growingio.android.sdk.track.providers.ConfigurationProvider.core
-
-
+//import com.growingio.android.sdk.track.providers.ConfigurationProvider.core
 
 
 class MainActivity3 : AppCompatActivity() {
@@ -30,11 +28,17 @@ class MainActivity3 : AppCompatActivity() {
     lateinit var textView_ziel_time: TextView
     lateinit var textView_header: TextView
     lateinit var button_change_stop: Button
+    lateinit var imgview_wheelchair: ImageView
+    lateinit var imgview_bicycle: ImageView
+    lateinit var imgview_stroller: ImageView
     var fahrzeit: Int = 0 // fahrzeit in minutes
+    var number_stops = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main3)
+
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         //remove whitespaces from fahrzeit string
         var sentence = MainActivity.fahrzeit
@@ -71,9 +75,20 @@ class MainActivity3 : AppCompatActivity() {
         textView_start_time = findViewById<TextView>(R.id.textView10)
         textView_ziel_time = findViewById<TextView>(R.id.textView11)
         button_change_stop = findViewById<Button>(R.id.button)
+        imgview_wheelchair = findViewById<ImageView>(R.id.imageView13)
+        imgview_bicycle = findViewById<ImageView>(R.id.imageView14)
+        imgview_stroller = findViewById<ImageView>(R.id.imageView15)
+
+        if (MainActivity.rollstuhl)
+            imgview_wheelchair.setColorFilter(Color.argb(255, 23, 155, 255))
+        if (MainActivity.fahrrad)
+            imgview_bicycle.setColorFilter(Color.argb(255, 23, 155, 255))
+        if (MainActivity.kinderwagen)
+            imgview_stroller.setColorFilter(Color.argb(255, 23, 155, 255))
 
         button_change_stop.setOnClickListener(){
-            dialog2.show(supportFragmentManager, "customDialog2")
+            if (number_stops == 0)
+                dialog2.show(supportFragmentManager, "customDialog2")
         }
 
         textView_ziel_location.text = "${MainActivity.ziel}"

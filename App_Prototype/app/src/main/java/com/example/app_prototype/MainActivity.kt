@@ -1,5 +1,6 @@
 package com.example.app_prototype
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
@@ -25,10 +26,14 @@ import java.lang.reflect.Executable
 import android.app.Activity
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
+import java.lang.reflect.Field
 import kotlin.math.*
 
 
@@ -45,15 +50,20 @@ class MainActivity : AppCompatActivity() {
     lateinit var ziel_textview: EditText
     lateinit var preis_textview: TextView
     lateinit var zeit_textview: TextView
+    lateinit var luggage_options: ImageView
     lateinit var start_suggestion: AutoCompleteTextView
     lateinit var intent_page2: Intent
     companion object {
         lateinit var start_coord: LatLng
         lateinit var ziel_coord: LatLng
+        var global_polyline = PolylineOptions()
         var preis = "-"
         var fahrzeit = "-"
         var start = "-"
         var ziel = "-"
+        var kinderwagen = false
+        var rollstuhl = false
+        var fahrrad = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(iniliatization_location, 9f))
 
         })
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         var dialog = Dialog_Window_1(this)      //initialize dialog window
         intent_page2 = Intent(this, MainActivity2::class.java)  //Initialize Intent
@@ -80,6 +91,8 @@ class MainActivity : AppCompatActivity() {
         ziel_textview = findViewById<EditText>(R.id.ziel)
         preis_textview = findViewById<TextView>(R.id.preis_textView)
         zeit_textview = findViewById<TextView>(R.id.fahrzeit_textview)
+        luggage_options = findViewById<ImageView>(R.id.luggage_options)
+        popup_menu()
         //start_suggestion = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
 
         /*
@@ -150,10 +163,9 @@ class MainActivity : AppCompatActivity() {
             if(actionId == EditorInfo.IME_ACTION_DONE)
             {
                 //Log.d("AL", "test1")
-                searchLocation("Ziel")
-                //val url = getDirectionsUrl(start_marker.position, ziel_marker.position)
-                //GetDirection(url).execute()
                 hideSoftKeyboard()
+                searchLocation("Ziel")
+                draw_route()
                 calculate_preis_and_zeit()
                 true
             } else
@@ -165,8 +177,9 @@ class MainActivity : AppCompatActivity() {
         start_textview.setOnEditorActionListener { v, actionId, event ->
             if(actionId == EditorInfo.IME_ACTION_DONE)
             {
-                searchLocation("Start")
                 hideSoftKeyboard()
+                searchLocation("Start")
+                draw_route()
                 calculate_preis_and_zeit()
                 true
             } else
@@ -175,6 +188,16 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    fun draw_route(){
+        if (this::start_marker.isInitialized and this::ziel_marker.isInitialized) {
+            val url = getDirectionsUrl(start_marker.position, ziel_marker.position)
+            Log.d("AL", "$url")
+            GetDirection(url).execute()
+        }
+        else
+            return
     }
 
     fun open_Activity2(){
@@ -222,6 +245,69 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    fun popup_menu(){
+        val popupMenu = PopupMenu(applicationContext, luggage_options)
+        popupMenu.inflate(R.menu.popuplist_luggage)
+        popupMenu.setOnMenuItemClickListener {
+            when(it.itemId){
+                R.id.stroller -> {
+                    Toast.makeText(applicationContext, "Kinderwagen ausgewählt", Toast.LENGTH_SHORT).show()
+                    if(kinderwagen == false) {
+                        it.icon.setTint(Color.argb(255, 23, 155, 255))
+                        kinderwagen = true
+                    }
+                    else{
+                        it.icon.setTint(Color.argb(255, 115, 115, 115))
+                        kinderwagen = false
+                    }
+                    true
+                }
+                R.id.wheelchair -> {
+                    Toast.makeText(applicationContext, "Rollstuhl ausgewählt", Toast.LENGTH_SHORT).show()
+                    if(rollstuhl == false) {
+                        it.icon.setTint(Color.argb(255, 23, 155, 255))
+                        rollstuhl = true
+                    }
+                    else{
+                        it.icon.setTint(Color.argb(255, 115, 115, 115))
+                        rollstuhl = false
+                    }
+                    true
+                }
+                R.id.bicycle -> {
+                    Toast.makeText(applicationContext, "Fahrrad ausgewählt", Toast.LENGTH_SHORT).show()
+                    if(fahrrad == false) {
+                        it.icon.setTint(Color.argb(255, 23, 155, 255))
+                        fahrrad = true
+                    }
+                    else{
+                        it.icon.setTint(Color.argb(255, 115, 115, 115))
+                        fahrrad = false
+                    }
+                    true
+                }
+                else -> true
+            }
+        }
+
+        luggage_options.setOnClickListener {
+            try {
+                val popup:Field = PopupMenu::class.java.getDeclaredField("mPopup")
+                popup.isAccessible = true
+                val menu_popup:Any? = popup.get(popupMenu)
+                menu_popup!!.javaClass.getDeclaredMethod("setForceShowIcon", Boolean::class.java).invoke(menu_popup, true)
+            }
+            catch(e:Exception){
+                e.printStackTrace()
+            }
+            finally {
+                popupMenu.show()
+            }
+
+            true
+        }
+    }
+
 
     fun haversine_distance(mk1: MarkerOptions, mk2: MarkerOptions) : Double {
         var R = 6371 // Radius of the Earth in km
@@ -230,33 +316,28 @@ class MainActivity : AppCompatActivity() {
         var difflat = rlat2-rlat1 // Radian difference (latitudes)
         var difflon = (mk2.position.longitude-mk1.position.longitude) * (Math.PI/180) // Radian difference (longitudes)
 
-        var d = 2 * R * asin(sqrt(sin(difflat/2) * sin(difflat/2) + cos(rlat1) * cos(rlat2)* sin(difflon/2)* sin(difflon/2)));
-        return d;
+        var d = 2 * R * asin(sqrt(sin(difflat/2) * sin(difflat/2) + cos(rlat1) * cos(rlat2)* sin(difflon/2)* sin(difflon/2)))
+        return d
     }
 
     inner class GetDirection(val url: String) : AsyncTask<Void, Void, List<List<LatLng>>>(){
         override fun doInBackground(vararg p0: Void?): List<List<LatLng>> {
-            Log.d("AL", "test3")
             val client = OkHttpClient()
             val request = Request.Builder().url(url).build()
             val response = client.newCall(request).execute()
-            val data = response.body().toString()
+            val data = response.body!!.string()
             val result = ArrayList<List<LatLng>>()
             try{
                 val respObj = Gson().fromJson(data, GoogleMapDTO::class.java)
                 val path = ArrayList<LatLng>()
 
                 for (i in 0..(respObj.routes[0].legs[0].steps.size-1)){
-                    val startLatLng = LatLng(respObj.routes[0].legs[0].steps[i].start_location.lat.toDouble()
-                        ,respObj.routes[0].legs[0].steps[i].start_location.lng.toDouble())
-                    path.add(startLatLng)
-                    val endLatLng = LatLng(respObj.routes[0].legs[0].steps[i].end_location.lat.toDouble()
-                        ,respObj.routes[0].legs[0].steps[i].end_location.lng.toDouble())
-                    path.add(endLatLng)
+                    path.addAll(decodePolyline(respObj.routes[0].legs[0].steps[i].polyline.points))
                 }
                 result.add(path)
             }
             catch (e:Exception){
+
                 e.printStackTrace()
             }
             return result
@@ -270,13 +351,51 @@ class MainActivity : AppCompatActivity() {
                 lineoption.color(Color.BLUE)
                 lineoption.geodesic(true)
             }
+            global_polyline = lineoption
             googleMap.addPolyline(lineoption)
         }
 
     }
 
+    fun decodePolyline(encoded: String): List<LatLng> {
+
+        val poly = ArrayList<LatLng>()
+        var index = 0
+        val len = encoded.length
+        var lat = 0
+        var lng = 0
+
+        while (index < len) {
+            var b: Int
+            var shift = 0
+            var result = 0
+            do {
+                b = encoded[index++].code - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lat += dlat
+
+            shift = 0
+            result = 0
+            do {
+                b = encoded[index++].code - 63
+                result = result or (b and 0x1f shl shift)
+                shift += 5
+            } while (b >= 0x20)
+            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+            lng += dlng
+
+            val latLng = LatLng((lat.toDouble() / 1E5),(lng.toDouble() / 1E5))
+            poly.add(latLng)
+        }
+
+        return poly
+    }
+
     fun getDirectionsUrl(origin:LatLng,dest:LatLng) : String{
-        return "https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&sensor=false&mode=driving&key=AIzaSyDAQadcivpP4xwhdLyLD1O6cns6mvmV6Ao"
+        return "https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&sensor=false&mode=driving&key=AIzaSyADgx8m94egOCMWAhUlDhFG_dwiG9CSre8"
     }
 
     fun searchLocation(id_edittext: String) {
@@ -302,15 +421,17 @@ class MainActivity : AppCompatActivity() {
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-            if (addressList != null) {
-                // check if no address was found
-                if (addressList.size == 0) {
-                    val toast = Toast.makeText(this, "Es konnte keine Adresse gefunden werden", Toast.LENGTH_SHORT)
-                    toast.show()
-                    return
-                }
+            if (addressList == null){
+                val toast = Toast.makeText(this, "Es konnte keine Adresse gefunden werden", Toast.LENGTH_SHORT)
+                toast.show()
+                return
             }
-            val address = addressList!![0]
+            if (addressList.size == 0) {
+                val toast = Toast.makeText(this, "Es konnte keine Adresse gefunden werden", Toast.LENGTH_SHORT)
+                toast.show()
+                return
+            }
+            val address = addressList[0]
             val latLng = LatLng(address.latitude, address.longitude)
             if (id_edittext == "Ziel") {
                 ziel_marker = MarkerOptions().position(latLng).title(id_edittext)

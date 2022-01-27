@@ -2,6 +2,7 @@ package com.example.app_prototype
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Bundle
@@ -29,6 +30,7 @@ class MainActivity2 : AppCompatActivity() {
     lateinit var fahrzeit_textview: TextView
     lateinit var textView_shuttleinfo: TextView
     lateinit var textView_main_caption: TextView
+    lateinit var transport_textview: TextView
     lateinit var preis: String
     lateinit var fahrzeit: String
     lateinit var start: String
@@ -62,6 +64,7 @@ class MainActivity2 : AppCompatActivity() {
             shuttle_marker = googleMap2.addMarker(MarkerOptions().position(iniliatization_location).title("Shuttle").icon(marker_icon))
             start_marker = googleMap2.addMarker(MarkerOptions().position(MainActivity.start_coord).title("Start"))
             ziel_marker = googleMap2.addMarker(MarkerOptions().position(MainActivity.ziel_coord).title("Ziel"))
+            googleMap2.addPolyline(MainActivity.global_polyline)
 
             googleMap2.setOnCameraMoveListener {
                 val timer = object: CountDownTimer(5000, 5000) {
@@ -88,6 +91,8 @@ class MainActivity2 : AppCompatActivity() {
             }
         })
 
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         intent_page3 = Intent(this, MainActivity3::class.java)  //Initialize Intent
         //startActivity(intent_page3)  //uncomment to go to page 3 directly
 
@@ -97,6 +102,7 @@ class MainActivity2 : AppCompatActivity() {
         fahrzeit_textview = findViewById<TextView>(R.id.fahrzeit_textview2)
         textView_shuttleinfo = findViewById<TextView>(R.id.textView_shuttleinfo)
         textView_main_caption = findViewById<TextView>(R.id.textView2)
+        transport_textview = findViewById<TextView>(R.id.transport_textview)
 
         preis = MainActivity.preis
         start = MainActivity.start
@@ -107,6 +113,26 @@ class MainActivity2 : AppCompatActivity() {
         ziel_textview.text = "Ziel: $ziel"
         preis_textview.text = "Preis: $preis"
         fahrzeit_textview.text = "Fahrzeit: $fahrzeit"
+        var transport_str = "-"
+        if (MainActivity.rollstuhl == true)
+        {
+            transport_str = "Rollstuhl"
+        }
+        if (MainActivity.kinderwagen == true)
+        {
+            if (transport_str == "-")
+                transport_str = "Kinderwagen"
+            else
+                transport_str += ", Kinderwagen"
+        }
+        if (MainActivity.fahrrad == true)
+        {
+            if (transport_str == "-")
+                transport_str = "Fahrrad"
+            else
+                transport_str += ", Fahrrad"
+        }
+        transport_textview.text= "Transport: $transport_str"
 
         val csv_file = InputStreamReader(assets.open("gps_data_02.csv"))
         val reader = BufferedReader(csv_file)

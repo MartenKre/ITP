@@ -213,7 +213,7 @@
         android:id="@+id/textView14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fahrgäste: 1 / 12"
+        android:text="Fahrgäste: 1 / 4"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/textView9"
         app:layout_constraintEnd_toEndOf="parent"
@@ -240,7 +240,7 @@
         android:id="@+id/textView15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Anzahl Zwischenstopps: 0"
+        android:text="Anzahl Zwischenstopps: 1"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/textView9"
         app:layout_constraintEnd_toEndOf="parent"
@@ -285,6 +285,7 @@
         app:layout_constraintStart_toEndOf="@+id/imageView14"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:layout_constraintVertical_bias="0.535"
-        app:srcCompat="@drawable/ic_baseline_luggage_24" />
+        app:srcCompat="@drawable/ic_baseline_luggage_24"
+        tools:srcCompat="@drawable/ic_baseline_stroller_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
