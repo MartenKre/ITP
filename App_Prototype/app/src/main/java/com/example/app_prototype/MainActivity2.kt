@@ -19,7 +19,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import java.io.BufferedReader
-import java.io.File
 import java.io.InputStreamReader
 
 class MainActivity2 : AppCompatActivity() {
@@ -53,8 +52,7 @@ class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
-
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map_dialog) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
             googleMap2 = it
             map_ready = true
@@ -94,7 +92,7 @@ class MainActivity2 : AppCompatActivity() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         intent_page3 = Intent(this, MainActivity3::class.java)  //Initialize Intent
-        //startActivity(intent_page3)  //uncomment to go to page 3 directly
+        startActivity(intent_page3)  //uncomment to go to page 3 directly
 
         start_textview = findViewById<TextView>(R.id.start_textview)
         ziel_textview = findViewById<TextView>(R.id.ziel_texttview)

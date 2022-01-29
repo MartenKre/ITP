@@ -1,13 +1,11 @@
 package com.example.app_prototype
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -16,23 +14,16 @@ import com.google.android.gms.maps.SupportMapFragment
 import java.io.IOException
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
-import androidx.loader.content.AsyncTaskLoader
 import com.google.android.gms.maps.model.*
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.lang.Exception
-import java.lang.reflect.Executable
 import android.app.Activity
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.*
-import androidx.core.widget.addTextChangedListener
 import java.lang.reflect.Field
 import kotlin.math.*
 
@@ -70,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map_dialog) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
             googleMap = it
 

@@ -63,6 +63,7 @@ class MainActivity3 : AppCompatActivity() {
             //TODO("VERSION.SDK_INT < O")
         }
         var dialog2 = Dialog_Window_2(this)      //initialize dialog window
+        var dialog3 = Dialog_Window_3(this)
 
         shuttle_slider = findViewById<SeekBar>(R.id.seekBar)
         shuttle_slider.setMax(0)
@@ -89,6 +90,8 @@ class MainActivity3 : AppCompatActivity() {
         button_change_stop.setOnClickListener(){
             if (number_stops == 0)
                 dialog2.show(supportFragmentManager, "customDialog2")
+            else
+                dialog3.show(supportFragmentManager, "customDialog3")
         }
 
         textView_ziel_location.text = "${MainActivity.ziel}"

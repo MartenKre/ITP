@@ -5,6 +5,7 @@
       <map>
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable-anydpi/ic_marker_png.xml" value="0.221875" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_baseline_accessible_24.xml" value="0.22135416666666666" />
+        <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.22135416666666666" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_marker_blue.xml" value="0.221875" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_shuttle.xml" value="0.221875" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_shuttle_blue.xml" value="0.221875" />
@@ -13,6 +14,7 @@
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/activity_main3.xml" value="0.36666666666666664" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/dialog_window_1.xml" value="0.33" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/dialog_window_2.xml" value="0.33" />
+        <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/dialog_window_3.xml" value="0.33" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/menu/popuplist_luggage.xml" value="0.25" />
       </map>
     </option>
