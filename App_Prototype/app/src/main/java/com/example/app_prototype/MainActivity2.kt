@@ -92,7 +92,7 @@ class MainActivity2 : AppCompatActivity() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         intent_page3 = Intent(this, MainActivity3::class.java)  //Initialize Intent
-        startActivity(intent_page3)  //uncomment to go to page 3 directly
+        //startActivity(intent_page3)  //uncomment to go to page 3 directly
 
         start_textview = findViewById<TextView>(R.id.start_textview)
         ziel_textview = findViewById<TextView>(R.id.ziel_texttview)
@@ -160,7 +160,6 @@ class MainActivity2 : AppCompatActivity() {
 
                 if (index <= Data_Latitude.lastIndex)
                 {
-                    Log.d("Index", index.toString())
                     draw_marker_on_map(index)
                 }
                 else{
@@ -232,7 +231,6 @@ class MainActivity2 : AppCompatActivity() {
             val prev_location = shuttle_marker?.position
             //shuttle_marker!!.remove()
             shuttle_marker?.position = current_location
-            Log.d("DRAW", current_location.toString())
             //shuttle_marker = googleMap2.addMarker(MarkerOptions().position(current_location).title("Shuttle").icon(marker_icon))
             if(active_timer == false)
             {
