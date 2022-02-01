@@ -5,12 +5,23 @@
       <map>
         <entry key="..\:/Documents/Semester 7/Informationstechnisches_Praktikum/ITP/App_Prototype/app/src/main/res/layout/activity_main.xml" value="0.7287376902417189" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable-anydpi/ic_marker_png.xml" value="0.221875" />
+<<<<<<< HEAD
+=======
+        <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_baseline_accessible_24.xml" value="0.22135416666666666" />
+        <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_baseline_location_on_24.xml" value="0.22135416666666666" />
+>>>>>>> 3927d6a3d2e902ae68b911b26a6e84d4dbc20b15
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_marker_blue.xml" value="0.221875" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_shuttle.xml" value="0.221875" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/drawable/ic_shuttle_blue.xml" value="0.221875" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/activity_main.xml" value="0.33" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/activity_main2.xml" value="0.36666666666666664" />
         <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/dialog_window_1.xml" value="0.33" />
+<<<<<<< HEAD
+=======
+        <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/dialog_window_2.xml" value="0.33" />
+        <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/layout/dialog_window_3.xml" value="0.33" />
+        <entry key="..\:/Git_Repos/ITP/App_Prototype/app/src/main/res/menu/popuplist_luggage.xml" value="0.25" />
+>>>>>>> 3927d6a3d2e902ae68b911b26a6e84d4dbc20b15
       </map>
     </option>
   </component>

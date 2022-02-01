@@ -19,7 +19,6 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import java.io.BufferedReader
-import java.io.File
 import java.io.InputStreamReader
 
 class MainActivity2 : AppCompatActivity() {
@@ -53,8 +52,7 @@ class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
-
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map_dialog) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
             googleMap2 = it
             map_ready = true
@@ -162,7 +160,6 @@ class MainActivity2 : AppCompatActivity() {
 
                 if (index <= Data_Latitude.lastIndex)
                 {
-                    Log.d("Index", index.toString())
                     draw_marker_on_map(index)
                 }
                 else{
@@ -234,7 +231,6 @@ class MainActivity2 : AppCompatActivity() {
             val prev_location = shuttle_marker?.position
             //shuttle_marker!!.remove()
             shuttle_marker?.position = current_location
-            Log.d("DRAW", current_location.toString())
             //shuttle_marker = googleMap2.addMarker(MarkerOptions().position(current_location).title("Shuttle").icon(marker_icon))
             if(active_timer == false)
             {

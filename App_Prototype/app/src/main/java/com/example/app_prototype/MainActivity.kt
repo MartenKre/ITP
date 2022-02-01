@@ -1,13 +1,11 @@
 package com.example.app_prototype
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -16,18 +14,17 @@ import com.google.android.gms.maps.SupportMapFragment
 import java.io.IOException
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
-import androidx.loader.content.AsyncTaskLoader
 import com.google.android.gms.maps.model.*
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.lang.Exception
-import java.lang.reflect.Executable
 import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.pm.ActivityInfo
+<<<<<<< HEAD
 import android.provider.VoicemailContract
 import android.text.Editable
 import android.text.TextWatcher
@@ -36,6 +33,9 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import com.google.android.gms.common.api.Status
+=======
+import android.widget.*
+>>>>>>> 3927d6a3d2e902ae68b911b26a6e84d4dbc20b15
 import java.lang.reflect.Field
 import kotlin.math.*
 import com.google.android.libraries.places.api.Places;
@@ -71,6 +71,7 @@ class MainActivity : AppCompatActivity() {
         lateinit var ziel_coord: LatLng
         var global_polyline = PolylineOptions()
         var preis = "-"
+        var preis_dbl = 0.toDouble()
         var fahrzeit = "-"
         var start = "-"
         var ziel = "-"
@@ -182,7 +183,7 @@ class MainActivity : AppCompatActivity() {
                 .build()
         placesClient.findAutocompletePredictions(request)
 
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map_dialog) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
             googleMap = it
 
@@ -368,17 +369,22 @@ class MainActivity : AppCompatActivity() {
             var distance = haversine_distance(start_marker, ziel_marker)
             var price = distance * 0.3
             var price_rounded = "%.2f".format(price)
-            var fahrzeit_koeff = 0
-            if (distance < 10)
-                fahrzeit_koeff = 3
+            var fahrzeit_koeff = 0.toDouble()
+            if (distance < 5)
+                fahrzeit_koeff = 3.0
+            else if (distance < 15)
+                fahrzeit_koeff = 1.5
+            else if (distance < 25)
+                fahrzeit_koeff = 1.2
             else
-                fahrzeit_koeff = 1
+                fahrzeit_koeff = 1.0
             var fahrzeit_min = (round((distance * fahrzeit_koeff)%60)).toInt().toString().padStart(2, '0')
             var fahrzeit_h = (round(distance * fahrzeit_koeff) / 60).toInt().toString().padStart(2, '0')
             preis_textview.text = "Preis: $price_rounded €"
             zeit_textview.text = "Fahrzeit: $fahrzeit_h h $fahrzeit_min"
 
             //set global variables
+            preis_dbl = price
             preis = "$price_rounded €"
             fahrzeit = "$fahrzeit_h h $fahrzeit_min"
         }

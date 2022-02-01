@@ -82,7 +82,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:layout_constraintVertical_bias="0.896"
-        app:srcCompat="@drawable/ic_baseline_location_on_24" />
+        app:srcCompat="@drawable/ic_target_location" />
 
     <ImageView
         android:id="@+id/imageView11"
@@ -285,7 +285,6 @@
         app:layout_constraintStart_toEndOf="@+id/imageView14"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:layout_constraintVertical_bias="0.535"
-        app:srcCompat="@drawable/ic_baseline_luggage_24"
-        tools:srcCompat="@drawable/ic_baseline_stroller_24" />
+        app:srcCompat="@drawable/ic_baseline_stroller_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
