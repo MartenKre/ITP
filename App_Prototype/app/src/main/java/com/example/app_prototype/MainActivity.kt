@@ -273,8 +273,8 @@ class MainActivity : AppCompatActivity() {
             draw_marker_on_map(false, start_marker)
             start = "Aktuelle Position"
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15f))
-            calculate_preis_and_zeit()
             draw_route()
+            calculate_preis_and_zeit()
         }
 
         call_shuttle_btn.setOnClickListener {

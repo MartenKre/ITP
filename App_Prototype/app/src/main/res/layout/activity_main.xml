@@ -62,7 +62,7 @@
         android:layout_width="0dp"
         android:layout_height="60dp"
         android:layout_marginStart="30dp"
-        android:layout_marginEnd="70dp"
+        android:layout_marginEnd="65dp"
         android:background="#FFB3B0B0"
         android:drawablePadding="20dp"
         android:hint="Start auswählen"
@@ -161,10 +161,10 @@
         app:iconTint="#0847E3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.94"
+        app:layout_constraintHorizontal_bias="0.956"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.060000002"
+        app:layout_constraintVertical_bias="0.062"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <Button
@@ -244,7 +244,7 @@
         android:layout_width="34dp"
         android:layout_height="0dp"
         android:layout_marginTop="24dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@+id/call_shuttle_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.957"
