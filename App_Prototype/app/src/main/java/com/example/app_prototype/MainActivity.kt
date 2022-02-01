@@ -24,7 +24,6 @@ import android.content.ContentValues.TAG
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.pm.ActivityInfo
-<<<<<<< HEAD
 import android.provider.VoicemailContract
 import android.text.Editable
 import android.text.TextWatcher
@@ -33,9 +32,7 @@ import android.view.MenuItem
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
 import com.google.android.gms.common.api.Status
-=======
 import android.widget.*
->>>>>>> 3927d6a3d2e902ae68b911b26a6e84d4dbc20b15
 import java.lang.reflect.Field
 import kotlin.math.*
 import com.google.android.libraries.places.api.Places;
@@ -59,12 +56,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var route: Polyline
     lateinit var current_location_btn: Button
     lateinit var call_shuttle_btn: Button
-    lateinit var start_textview: EditText
-    lateinit var ziel_textview: EditText
+    lateinit var start_textview: AutocompleteSupportFragment
+    lateinit var ziel_textview: AutocompleteSupportFragment
     lateinit var preis_textview: TextView
     lateinit var zeit_textview: TextView
     lateinit var luggage_options: ImageView
-    lateinit var start_suggestion: AutoCompleteTextView
     lateinit var intent_page2: Intent
     companion object {
         lateinit var start_coord: LatLng
@@ -80,14 +76,14 @@ class MainActivity : AppCompatActivity() {
         var fahrrad = false
     }
 
-    fun searchLocation(id_edittext : String, address : String, latlng : LatLng, name : String) {
+    /*fun searchLocation(id_edittext : String, address : String, latlng : LatLng, name : String) {
         lateinit var textview: EditText
         if (id_edittext == "Ziel") {
             textview = findViewById<EditText>(R.id.ziel)
         }
         else {
             //textview = findViewById<EditText>(R.id.autocomplete_fragment)
-            start_textview
+            start_textview.text
         }
         lateinit var location: String
         location = name
@@ -168,7 +164,7 @@ class MainActivity : AppCompatActivity() {
             }
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
         }
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -200,31 +196,38 @@ class MainActivity : AppCompatActivity() {
         //Initialize Buttons
         current_location_btn = findViewById<Button>(R.id.current_location_button)
         call_shuttle_btn = findViewById<Button>(R.id.call_shuttle_button)
-        ziel_textview = findViewById<EditText>(R.id.ziel)
         preis_textview = findViewById<TextView>(R.id.preis_textView)
         zeit_textview = findViewById<TextView>(R.id.fahrzeit_textview)
         luggage_options = findViewById<ImageView>(R.id.luggage_options)
         // Initialize the AutocompleteSupportFragment
-        val start_textview = supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
-        // Specify the types of place data to return.
+        start_textview = supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+        start_textview.setHint("Start suchen")
+        start_textview.getView()?.setBackgroundColor(Color.argb(80, 220, 220, 220))
+        ziel_textview = supportFragmentManager.findFragmentById(R.id.autocomplete_fragment2) as AutocompleteSupportFragment
+        ziel_textview.setHint("Ziel suchen")
+        ziel_textview.getView()?.setBackgroundColor(Color.argb(80, 220, 220, 220))
 
+        // Specify the types of place data to return.
         start_textview.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+        ziel_textview.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
         start_textview.setOnPlaceSelectedListener(object : PlaceSelectionListener  {
             override fun onPlaceSelected(place: Place) {
 
-                val address : String =  place.address
-                val latlng : LatLng = place.latLng
-                val id : String = place.id
-                val name : String = place.name
+                val address : String? =  place.address
+                val latlng : LatLng? = place.latLng
+                val id : String? = place.id
+                val name : String? = place.name
 
 
                 //Get info about the selected place.
-                Log.i(TAG, "Place: ${place.name}, ${place.id}")
-                //hideSoftKeyboard()
+                Log.d("PLACES", "Place: ${place.name}, ${place.id}")
+                Log.d("PLACES", "Place: ${place.address}, ${place.latLng}")
 
-                //searchLocation("Start",address,latlng,name)
-                //draw_route()
-                //calculate_preis_and_zeit()
+                start = place.name.toString()
+                start_marker = MarkerOptions().position(latlng!!).title("Start")
+                draw_marker_on_map(false, start_marker)
+                draw_route()
+                calculate_preis_and_zeit()
 
             }
 
@@ -234,68 +237,34 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        ziel_textview.setOnPlaceSelectedListener(object : PlaceSelectionListener  {
+            override fun onPlaceSelected(place: Place) {
 
-        /*
-        start_textview.setOnEditorActionListener { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_DONE)
-            {
-                hideSoftKeyboard()
-                searchLocation("Start")
+                val address : String? =  place.address
+                val latlng : LatLng? = place.latLng
+                val id : String? = place.id
+                val name : String? = place.name
+
+
+                //Get info about the selected place.
+                Log.d("PLACES", "Place: ${place.name}, ${place.id}")
+                Log.d("PLACES", "Place: ${place.address}, ${place.latLng}")
+
+                ziel = place.name.toString()
+                ziel_marker = MarkerOptions().position(latlng!!).title("Ziel")
+                draw_marker_on_map(true, ziel_marker)
                 draw_route()
                 calculate_preis_and_zeit()
-                true
-            } else
-            {
-                false
+
             }
-        }*/
+
+            override fun onError(status: Status) {
+                //Handle the error.
+                Log.i(TAG, "An error occurred: $status")
+            }
+        })
 
         popup_menu()
-        //start_suggestion = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
-
-        /*
-        start_suggestion.addTextChangedListener(object : TextWatcher
-        {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun afterTextChanged(p0: Editable?) {
-                // activates every time a key is pressed
-                var addresses = find_addresses("Start")
-                if (addresses.size == 2)
-                {
-                    Log.d("S1", "${addresses[1]}")
-                    var suggestions = arrayOf("${addresses[1]}")
-                    var adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, suggestions)
-                    start_suggestion.setAdapter(adapter)
-                    start_suggestion.showDropDown()
-                }
-                else if (addresses.size == 3)
-                {
-                    Log.d("S2", "${addresses[1]}, ${addresses[2]}")
-                    var suggestions = arrayOf("${addresses[1]}", "${addresses[2]}")
-                    var adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, suggestions)
-                    start_suggestion.setAdapter(adapter)
-                    start_suggestion.showDropDown()
-                }
-                else if (addresses.size == 4)
-                {
-                    Log.d("S3", "${addresses[1]}, ${addresses[2]}, ${addresses[3]}")
-                    var suggestions = arrayOf("${addresses[1]}", "${addresses[2]}", "${addresses[3]}")
-                    var adapter = ArrayAdapter(this@MainActivity, android.R.layout.simple_list_item_1, suggestions)
-                    start_suggestion.setAdapter(adapter)
-                    start_suggestion.showDropDown()
-                }
-                else
-                    Log.d("SS", "no addresses found: ${addresses.size}")
-            }
-
-        })*/
-
-        //start_suggestion.setOnFocusChangeListener { view, b ->  if (b) start_suggestion.showDropDown()}
 
         current_location_btn.setOnClickListener{
             start_textview.setText("Aktuelle Position")
@@ -305,6 +274,7 @@ class MainActivity : AppCompatActivity() {
             start = "Aktuelle Position"
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(current_location, 15f))
             calculate_preis_and_zeit()
+            draw_route()
         }
 
         call_shuttle_btn.setOnClickListener {
@@ -316,22 +286,6 @@ class MainActivity : AppCompatActivity() {
                 toast.show()
             }
         }
-
-        ziel_textview.setOnEditorActionListener { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_DONE)
-            {
-                //Log.d("AL", "test1")
-                hideSoftKeyboard()
-                //searchLocation("Ziel")
-                draw_route()
-                calculate_preis_and_zeit()
-                true
-            } else
-            {
-                false
-            }
-        }
-
     }
 
     fun draw_route(){
@@ -361,6 +315,7 @@ class MainActivity : AppCompatActivity() {
                 googleMap.addMarker(start_marker)
         }
         googleMap.addMarker(marker)
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.position, 15f))
     }
 
     fun calculate_preis_and_zeit() {
