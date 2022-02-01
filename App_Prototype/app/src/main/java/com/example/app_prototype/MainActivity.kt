@@ -24,17 +24,30 @@ import okhttp3.Request
 import java.lang.Exception
 import java.lang.reflect.Executable
 import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Context.INPUT_METHOD_SERVICE
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.provider.VoicemailContract
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.*
 import androidx.core.widget.addTextChangedListener
+import com.google.android.gms.common.api.Status
 import java.lang.reflect.Field
 import kotlin.math.*
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.model.RectangularBounds;
+import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 
 class MainActivity : AppCompatActivity() {
@@ -66,9 +79,108 @@ class MainActivity : AppCompatActivity() {
         var fahrrad = false
     }
 
+    fun searchLocation(id_edittext : String, address : String, latlng : LatLng, name : String) {
+        lateinit var textview: EditText
+        if (id_edittext == "Ziel") {
+            textview = findViewById<EditText>(R.id.ziel)
+        }
+        else {
+            //textview = findViewById<EditText>(R.id.autocomplete_fragment)
+            start_textview
+        }
+        lateinit var location: String
+        location = name
+        //location = textview.text.toString()
+        var addressList: List<Address>? = null
+
+        if (location == null || location == "") {
+            return
+        }
+        else{
+            val geoCoder = Geocoder(this)
+            try {
+                addressList = geoCoder.getFromLocationName(location, 1)
+
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            if (addressList == null){
+                val toast = Toast.makeText(this, "Es konnte keine Adresse gefunden werden", Toast.LENGTH_SHORT)
+                toast.show()
+                return
+            }
+            if (addressList.size == 0) {
+                val toast = Toast.makeText(this, "Es konnte keine Adresse gefunden werden", Toast.LENGTH_SHORT)
+                toast.show()
+                return
+            }
+            val address = addressList[0]
+            val latLng = LatLng(address.latitude, address.longitude)
+
+            if (id_edittext == "Ziel") {
+                ziel_marker = MarkerOptions().position(latLng).title(id_edittext)
+                draw_marker_on_map(true, ziel_marker)
+                var str1 = " "
+                var str2 = " "
+                var str3 = " "
+                if (address.locality == null){
+                    address.locality = ""
+                }
+                if (address.subLocality == null) {
+                    address.subLocality = ""
+                    str1 = ""
+                }
+                if (address.thoroughfare == null) {
+                    address.thoroughfare = ""
+                    str2 = ""
+                }
+                if (address.subThoroughfare == null) {
+                    address.subThoroughfare = ""
+                    str3 = ""
+                }
+                ziel = address.locality.toString() + str1 + address.subLocality.toString() + str2 + address.thoroughfare.toString() + str3 + address.subThoroughfare.toString()
+                ziel_textview.setText(ziel, TextView.BufferType.EDITABLE)
+            }
+            else{
+                start_marker = MarkerOptions().position(latLng).title(id_edittext)
+                draw_marker_on_map(false, start_marker)
+                var str1 = " "
+                var str2 = " "
+                var str3 = " "
+                if (address.locality == null){
+                    address.locality = ""
+                }
+                if (address.subLocality == null) {
+                    address.subLocality = ""
+                    str1 = ""
+                }
+                if (address.thoroughfare == null) {
+                    address.thoroughfare = ""
+                    str2 = ""
+                }
+                if (address.subThoroughfare == null) {
+                    address.subThoroughfare = ""
+                    str3 = ""
+                }
+                start = address.locality.toString() + str1 + address.subLocality.toString() + str2 + address.thoroughfare.toString() + str3 + address.subThoroughfare.toString()
+                //start_textview.setText(start, TextView.BufferType.EDITABLE)
+            }
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        //initialize Places client
+        Places.initialize(getApplicationContext(),"AIzaSyADgx8m94egOCMWAhUlDhFG_dwiG9CSre8")
+        val placesClient = Places.createClient(this)
+        val request =
+            FindAutocompletePredictionsRequest.builder()
+                .setCountries("DE","CH")
+                .setTypeFilter(TypeFilter.ADDRESS)
+                .build()
+        placesClient.findAutocompletePredictions(request)
 
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(OnMapReadyCallback {
@@ -87,11 +199,56 @@ class MainActivity : AppCompatActivity() {
         //Initialize Buttons
         current_location_btn = findViewById<Button>(R.id.current_location_button)
         call_shuttle_btn = findViewById<Button>(R.id.call_shuttle_button)
-        start_textview = findViewById<EditText>(R.id.start)
         ziel_textview = findViewById<EditText>(R.id.ziel)
         preis_textview = findViewById<TextView>(R.id.preis_textView)
         zeit_textview = findViewById<TextView>(R.id.fahrzeit_textview)
         luggage_options = findViewById<ImageView>(R.id.luggage_options)
+        // Initialize the AutocompleteSupportFragment
+        val start_textview = supportFragmentManager.findFragmentById(R.id.autocomplete_fragment) as AutocompleteSupportFragment
+        // Specify the types of place data to return.
+
+        start_textview.setPlaceFields(listOf(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG))
+        start_textview.setOnPlaceSelectedListener(object : PlaceSelectionListener  {
+            override fun onPlaceSelected(place: Place) {
+
+                val address : String =  place.address
+                val latlng : LatLng = place.latLng
+                val id : String = place.id
+                val name : String = place.name
+
+
+                //Get info about the selected place.
+                Log.i(TAG, "Place: ${place.name}, ${place.id}")
+                //hideSoftKeyboard()
+
+                //searchLocation("Start",address,latlng,name)
+                //draw_route()
+                //calculate_preis_and_zeit()
+
+            }
+
+            override fun onError(status: Status) {
+                //Handle the error.
+                Log.i(TAG, "An error occurred: $status")
+            }
+        })
+
+
+        /*
+        start_textview.setOnEditorActionListener { v, actionId, event ->
+            if(actionId == EditorInfo.IME_ACTION_DONE)
+            {
+                hideSoftKeyboard()
+                searchLocation("Start")
+                draw_route()
+                calculate_preis_and_zeit()
+                true
+            } else
+            {
+                false
+            }
+        }*/
+
         popup_menu()
         //start_suggestion = findViewById<AutoCompleteTextView>(R.id.autoCompleteTextView)
 
@@ -164,21 +321,7 @@ class MainActivity : AppCompatActivity() {
             {
                 //Log.d("AL", "test1")
                 hideSoftKeyboard()
-                searchLocation("Ziel")
-                draw_route()
-                calculate_preis_and_zeit()
-                true
-            } else
-            {
-                false
-            }
-        }
-
-        start_textview.setOnEditorActionListener { v, actionId, event ->
-            if(actionId == EditorInfo.IME_ACTION_DONE)
-            {
-                hideSoftKeyboard()
-                searchLocation("Start")
+                //searchLocation("Ziel")
                 draw_route()
                 calculate_preis_and_zeit()
                 true
@@ -396,93 +539,6 @@ class MainActivity : AppCompatActivity() {
 
     fun getDirectionsUrl(origin:LatLng,dest:LatLng) : String{
         return "https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${dest.latitude},${dest.longitude}&sensor=false&mode=driving&key=AIzaSyADgx8m94egOCMWAhUlDhFG_dwiG9CSre8"
-    }
-
-    fun searchLocation(id_edittext: String) {
-        lateinit var textview: EditText
-        if (id_edittext == "Ziel") {
-            textview = findViewById<EditText>(R.id.ziel)
-        }
-        else {
-            textview = findViewById<EditText>(R.id.start)
-        }
-        lateinit var location: String
-        location = textview.text.toString()
-        var addressList: List<Address>? = null
-
-        if (location == null || location == "") {
-            return
-        }
-        else{
-            val geoCoder = Geocoder(this)
-            try {
-                addressList = geoCoder.getFromLocationName(location, 1)
-
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            if (addressList == null){
-                val toast = Toast.makeText(this, "Es konnte keine Adresse gefunden werden", Toast.LENGTH_SHORT)
-                toast.show()
-                return
-            }
-            if (addressList.size == 0) {
-                val toast = Toast.makeText(this, "Es konnte keine Adresse gefunden werden", Toast.LENGTH_SHORT)
-                toast.show()
-                return
-            }
-            val address = addressList[0]
-            val latLng = LatLng(address.latitude, address.longitude)
-            if (id_edittext == "Ziel") {
-                ziel_marker = MarkerOptions().position(latLng).title(id_edittext)
-                draw_marker_on_map(true, ziel_marker)
-                var str1 = " "
-                var str2 = " "
-                var str3 = " "
-                if (address.locality == null){
-                    address.locality = ""
-                }
-                if (address.subLocality == null) {
-                    address.subLocality = ""
-                    str1 = ""
-                }
-                if (address.thoroughfare == null) {
-                    address.thoroughfare = ""
-                    str2 = ""
-                }
-                if (address.subThoroughfare == null) {
-                    address.subThoroughfare = ""
-                    str3 = ""
-                }
-                ziel = address.locality.toString() + str1 + address.subLocality.toString() + str2 + address.thoroughfare.toString() + str3 + address.subThoroughfare.toString()
-                ziel_textview.setText(ziel, TextView.BufferType.EDITABLE)
-            }
-            else{
-                start_marker = MarkerOptions().position(latLng).title(id_edittext)
-                draw_marker_on_map(false, start_marker)
-                var str1 = " "
-                var str2 = " "
-                var str3 = " "
-                if (address.locality == null){
-                    address.locality = ""
-                }
-                if (address.subLocality == null) {
-                    address.subLocality = ""
-                    str1 = ""
-                }
-                if (address.thoroughfare == null) {
-                    address.thoroughfare = ""
-                    str2 = ""
-                }
-                if (address.subThoroughfare == null) {
-                    address.subThoroughfare = ""
-                    str3 = ""
-                }
-                start = address.locality.toString() + str1 + address.subLocality.toString() + str2 + address.thoroughfare.toString() + str3 + address.subThoroughfare.toString()
-                start_textview.setText(start, TextView.BufferType.EDITABLE)
-            }
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-        }
     }
 
     /*
