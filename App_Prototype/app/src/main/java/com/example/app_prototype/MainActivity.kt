@@ -79,6 +79,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         //initialize Places client
         Places.initialize(getApplicationContext(),"AIzaSyADgx8m94egOCMWAhUlDhFG_dwiG9CSre8")
         val placesClient = Places.createClient(this)
@@ -97,7 +98,6 @@ class MainActivity : AppCompatActivity() {
             googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(iniliatization_location, 9f))
 
         })
-        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         var dialog = Dialog_Window_1(this)      //initialize dialog window
         intent_page2 = Intent(this, MainActivity2::class.java)  //Initialize Intent

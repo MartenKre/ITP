@@ -73,6 +73,7 @@ class Dialog_Window_3(val mainActivity3: MainActivity3): DialogFragment() {
         ok_button.isEnabled = false
 
         abbruch_button.setOnClickListener{
+            mainActivity3.dialog3_loading = false
             dismiss()
         }
 
@@ -81,6 +82,7 @@ class Dialog_Window_3(val mainActivity3: MainActivity3): DialogFragment() {
             mainActivity3.number_stops = 0
             MainActivity.fahrzeit = fahrzeit_textview.text.toString()
             mainActivity3.new_target_locatiopn_selected()
+            mainActivity3.dialog3_loading = false
             dismiss()
         }
 

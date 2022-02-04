@@ -47,6 +47,7 @@ class MainActivity3 : AppCompatActivity() {
     var fahrzeit: Int = 0 // fahrzeit in minutes
     var number_stops = 1
     var offset_ms = 0   // offset in ms
+    var dialog3_loading = false
     companion object {
         var passed_time = 0 // passed time des timers in Sekunden
         var polyline_list = mutableListOf<PolylineOptions>()
@@ -114,8 +115,13 @@ class MainActivity3 : AppCompatActivity() {
         button_change_stop.setOnClickListener(){
             if (number_stops == 0)
                 dialog2.show(supportFragmentManager, "customDialog2")
-            else
-                dialog3.show(supportFragmentManager, "customDialog3")
+            else{
+                if(dialog3_loading == false){
+                    dialog3_loading = true
+                    dialog3.show(supportFragmentManager, "customDialog3")
+                }
+            }
+
         }
 
         textView_ziel_location.text = "${MainActivity.ziel}"
