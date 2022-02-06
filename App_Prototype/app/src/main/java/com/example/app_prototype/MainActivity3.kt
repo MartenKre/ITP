@@ -156,7 +156,7 @@ class MainActivity3 : AppCompatActivity() {
             }
 
             override fun onFinish() {
-                shuttle_slider.progress = (fahrzeit * 60 *1000)
+                shuttle_slider.progress = (fahrzeit * 60 *1000 + offset_ms)
                 button_change_stop.isEnabled = false
                 textView_remaining_time.text = "Bitte steigen Sie hier aus"
                 textView_header.text = "Das Shuttle hat das Ziel erreicht"
@@ -167,11 +167,20 @@ class MainActivity3 : AppCompatActivity() {
         timer.start()
     }
 
-    fun new_target_locatiopn_selected(){
+    fun new_target_location_selected(){
         timer.cancel()
         textView_zwischenstopps.text = "Anzahl Zwischenstopps: $number_stops"
         textView_ziel_time.text = calc_target_time()
         offset_ms = passed_time*1000
+
+        var sentence = MainActivity.fahrzeit
+        sentence = sentence.replace("\\s".toRegex(), "")
+        //split farhzeit string in h and min
+        val fahrzeit_h_m : List<String> = sentence.split("h")
+        //calculate fahrzeit as int
+        fahrzeit = fahrzeit_h_m[0].toInt()*60 + fahrzeit_h_m[1].toInt()
+        shuttle_slider.setMax(fahrzeit*60*1000+offset_ms)
+
         update_seekbar()
         if(number_stops == 0)
         {
